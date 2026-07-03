@@ -1,4 +1,3 @@
-# Auto-triggered workflow detection
 name: Scan openwrt-passwall Version
 
 on:

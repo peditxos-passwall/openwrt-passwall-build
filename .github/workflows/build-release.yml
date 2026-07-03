@@ -1,4 +1,3 @@
-# Auto-triggered workflow detection
 name: Build and Release
 
 on:
