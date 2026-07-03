@@ -2,7 +2,7 @@
 
 Binary distribution of [Openwrt-Passwall/openwrt-passwall](https://github.com/Openwrt-Passwall/openwrt-passwall) built with official OpenWRT SDK.
 
-Based on [moetayuko/openwrt-passwall-build](https://github.com/moetayuko/openwrt-passwall-build) — with added PEditX theme packages.
+Based on [moetayuko/openwrt-passwall-build](https://github.com/moetayuko/openwrt-passwall-build) — with added PeDitX theme packages.
 
 [![Passwall Build](https://github.com/peditxos-passwall/openwrt-passwall-build/actions/workflows/passwall-build.yml/badge.svg)](https://github.com/peditxos-passwall/openwrt-passwall-build/actions/workflows/passwall-build.yml)
 [![Scan openwrt-passwall Version](https://github.com/peditxos-passwall/openwrt-passwall-build/actions/workflows/version-scan.yml/badge.svg)](https://github.com/peditxos-passwall/openwrt-passwall-build/actions/workflows/version-scan.yml)
