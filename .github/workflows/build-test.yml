@@ -34,6 +34,9 @@ jobs:
             src-git|passwall_packages|https://github.com/Openwrt-Passwall/openwrt-passwall-packages;main
             src-git|passwall_luci|https://github.com/Openwrt-Passwall/openwrt-passwall;main
             src-git|passwall2|https://github.com/Openwrt-Passwall/openwrt-passwall2;main
+            src-git|peditx_themes|https://github.com/peditx/luci-theme-peditx^main
+            src-git|peditx_carbon|https://github.com/peditx/luci-theme-carbonpx^main
+            src-git|peditx_switch|https://github.com/peditx/luci-app-themeswitch^main
           KEY_BUILD: ${{ secrets.SIGN_PRIV_KEY }}
           PRIVATE_KEY: ${{ secrets.APK_PRIVATE_KEY }}
           V: s

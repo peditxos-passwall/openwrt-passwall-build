@@ -40,8 +40,7 @@ jobs:
           while read -r line;
           do
             ARCH=$(echo "$line" | cut -d " " -f 1)
-
-            [[ $FIRST -ne 1 ]] && JSON="$JSON"','
+            [[ $FIRST -ne 1 ]] && JSON="$JSON",'
             FIRST=0
 
             JSON="$JSON"'{"arch":"'"$ARCH"'","ref":"'"$REF"'"}'
@@ -140,6 +139,9 @@ jobs:
             src-git|passwall_packages|https://github.com/Openwrt-Passwall/openwrt-passwall-packages^${{ steps.ver.outputs.packages }}
             src-git|passwall_luci|https://github.com/Openwrt-Passwall/openwrt-passwall^${{ steps.ver.outputs.passwall }}
             src-git|passwall2|https://github.com/Openwrt-Passwall/openwrt-passwall2^${{ steps.ver.outputs.passwall2 }}
+            src-git|peditx_themes|https://github.com/peditx/luci-theme-peditx^main
+            src-git|peditx_carbon|https://github.com/peditx/luci-theme-carbonpx^main
+            src-git|peditx_switch|https://github.com/peditx/luci-app-themeswitch^main
           KEY_BUILD: ${{ secrets.SIGN_PRIV_KEY }}
           PRIVATE_KEY: ${{ secrets.APK_PRIVATE_KEY }}
           V: s
@@ -158,7 +160,13 @@ jobs:
           LOG_DIR=${{ steps.get_build_path.outputs.log }}/${{ matrix.arch }}
           mkdir -p dist/$PKG_DIR dist/$LOG_DIR
 
+          # Copy passwall packages
           rsync -av bin/packages/${{ matrix.arch }}/passwall* dist/$PKG_DIR/
+          # Copy peditx packages
+          rsync -av bin/packages/${{ matrix.arch }}/luci-theme-peditx* dist/$PKG_DIR/ 2>/dev/null || true
+          rsync -av bin/packages/${{ matrix.arch }}/luci-theme-carbonpx* dist/$PKG_DIR/ 2>/dev/null || true
+          rsync -av bin/packages/${{ matrix.arch }}/luci-app-themeswitch* dist/$PKG_DIR/ 2>/dev/null || true
+
           rsync -av --files-from=logs.txt logs/package/feeds/ dist/$LOG_DIR/
 
       - name: Upload Output Folder
@@ -187,12 +195,20 @@ jobs:
       - name: Add public key
         run: cp apk.pub ipk.pub dist/
 
-      - name: Uploading package files
-        uses: Burnett01/rsync-deployments@9.0.0
-        with:
-          switches: -rvzc --delete
-          path: dist/
-          remote_path: /home/frs/project/openwrt-passwall-build/
-          remote_host: frs.sourceforge.net
-          remote_user: ${{ secrets.SF_DEPLOY_USER }}
-          remote_key: ${{ secrets.SF_DEPLOY_KEY }}
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.SERVER_SSH_PORT || 22 }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy to Server
+        run: |
+          rsync -avz --delete \
+            -e "ssh -p ${{ secrets.SERVER_SSH_PORT || 22 }}" \
+            dist/ \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/html/openwrt-passwall-build/
+
+      - name: Cleanup SSH
+        if: always()
+        run: rm -rf ~/.ssh/id_rsa
