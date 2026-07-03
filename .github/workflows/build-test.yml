@@ -1,4 +1,5 @@
-name: Build Test Copy
+name: Build Test
+
 on:
   workflow_dispatch:
     inputs:
@@ -6,13 +7,16 @@ on:
         description: "Target architecture"
         required: true
         default: x86_64
+
       sdk_version:
         description: "SDK version"
         required: true
         default: main
+
       golang_commit:
         description: "Golang version"
         default: master
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,6 +25,7 @@ jobs:
         uses: jlumbroso/free-disk-space@main
         with:
           swap-storage: false
+
       - name: Build package
         uses: moetayuko/gh-action-sdk@main
         env:
@@ -36,6 +41,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.APK_PRIVATE_KEY }}
           V: s
           GOLANG_COMMIT: ${{ github.event.inputs.golang_commit }}
+
       - name: Save Build Result
         uses: actions/upload-artifact@v7
         with:
