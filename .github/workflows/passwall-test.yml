@@ -1,4 +1,4 @@
-name: Build Test
+name: Passwall Test
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: Build and Release
+name: Passwall Build
 
 on:
   workflow_dispatch:
@@ -64,12 +64,10 @@ jobs:
       - name: Prepare Output Folder
         run: |
           mkdir -p dist/snapshots/packages/x86_64 dist/snapshots/faillogs/x86_64
-
           rsync -av bin/packages/x86_64/passwall* dist/snapshots/packages/x86_64/ 2>/dev/null || true
           rsync -av bin/packages/x86_64/luci-theme-peditx* dist/snapshots/packages/x86_64/ 2>/dev/null || true
           rsync -av bin/packages/x86_64/luci-theme-carbonpx* dist/snapshots/packages/x86_64/ 2>/dev/null || true
           rsync -av bin/packages/x86_64/luci-app-themeswitch* dist/snapshots/packages/x86_64/ 2>/dev/null || true
-
           cat ../../../logs.txt 2>/dev/null | xargs -r -I{} cp {} dist/snapshots/faillogs/x86_64/ 2>/dev/null || true
           cp apk.pub ipk.pub dist/
 
@@ -86,10 +84,5 @@ jobs:
           echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -p ${{ secrets.SERVER_SSH_PORT || 22 }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
-
-          rsync -avz --delete \
-            -e "ssh -p ${{ secrets.SERVER_SSH_PORT || 22 }}" \
-            dist/ \
-            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/html/openwrt-passwall-build/
-
+          rsync -avz --delete -e "ssh -p ${{ secrets.SERVER_SSH_PORT || 22 }}" dist/ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/html/openwrt-passwall-build/
           rm -rf ~/.ssh/id_ed25519
