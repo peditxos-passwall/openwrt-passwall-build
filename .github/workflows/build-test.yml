@@ -8,15 +8,6 @@ on:
         required: true
         default: x86_64
 
-      sdk_version:
-        description: "SDK version"
-        required: true
-        default: main
-
-      golang_commit:
-        description: "Golang version"
-        default: master
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,7 +20,7 @@ jobs:
       - name: Build package
         uses: moetayuko/gh-action-sdk@main
         env:
-          ARCH: ${{ github.event.inputs.arch }}-${{ github.event.inputs.sdk_version }}
+          ARCH: ${{ github.event.inputs.arch }}-main
           EXTRA_FEEDS: >-
             src-git|passwall_packages|https://github.com/Openwrt-Passwall/openwrt-passwall-packages;main
             src-git|passwall_luci|https://github.com/Openwrt-Passwall/openwrt-passwall;main
@@ -40,11 +31,11 @@ jobs:
           KEY_BUILD: ${{ secrets.SIGN_PRIV_KEY }}
           PRIVATE_KEY: ${{ secrets.APK_PRIVATE_KEY }}
           V: s
-          GOLANG_COMMIT: ${{ github.event.inputs.golang_commit }}
+          GOLANG_COMMIT: master
 
       - name: Save Build Result
         uses: actions/upload-artifact@v7
         with:
-          name: openwrt-passwall
+          name: openwrt-passwall-${{ github.event.inputs.arch }}
           path: bin/packages/${{ github.event.inputs.arch }}/passwall*/*
           retention-days: 7
