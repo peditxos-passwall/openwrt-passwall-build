@@ -1,0 +1,12 @@
+name: Test Push Trigger
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - cur_ver.json
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: echo "Checkout works!"
